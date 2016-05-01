@@ -24,7 +24,6 @@
 #include "autogen.h"
 
 // Qt Includes
-#include <QStringListIterator>
 #include <QCoreApplication>
 #include <QStringList>
 #include <QRegExp>
@@ -40,32 +39,29 @@ int main( int argc, char *argv[] )
 {
     QCoreApplication a( argc, argv );
 
-    Q_UNUSED( a )
-
-    QStringList arguments = QCoreApplication::arguments();
-
     // Search for the Input directory flags
-    int index = arguments.indexOf(
-                QRegExp( "^-?h(elp)?$", Qt::CaseInsensitive ) );
+    QStringList const args( QCoreApplication::arguments() );
+    int const index( args.indexOf(QRegExp("^-?h(elp)?$",Qt::CaseInsensitive)) );
 
-    if( index > -1 || ( QCoreApplication::arguments().size() < 2 ) )
+    if( index > -1 || ( args.size() < 2 ) )
     {
-        std::cout << "Usage: " << qPrintable( arguments.at( 0 ) );
-        std::cout << " [ options ] idl_1 [ idl_2 ... ]\n" << std::endl;
+        std::cout << "Usage: " << args.at(0).toStdString();
+        std::cout << " [options] idl_1 [idl_2 ...]\n" << std::endl;
         std::cout << "options: [default]\n";
-        std::cout << "  indir=[.]           Directory containing the template files.\n";
-        std::cout << "  outdir=[.]          Directory to place generated files.\n";
-        std::cout << "  idldir=[.]          Directory containing the idl/proto files.\n";
-        std::cout << "  namespace=[gtqt]    Namespace to be used within generated files.\n";
+        std::cout << "  indir=[.]           Directory containing the template "
+                     "files.\n";
+        std::cout << "  outdir=[.]          Directory to place generated files."
+                     "\n";
+        std::cout << "  idldir=[.]          Directory containing the idl/proto "
+                     "files.\n";
+        std::cout << "  namespace=[gtqt]    Namespace to be used within "
+                     "generated files.\n";
         return 1;
     }
 
     // Create the code generator
     Autogen generator;
 
-    generator.generate();
-
-    return 0;
-
-    //return generator.generate();
+    // Begin generation
+    return generator.generate();
 }

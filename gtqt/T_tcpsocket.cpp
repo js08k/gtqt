@@ -38,11 +38,11 @@ __NAMESPACE__::TcpSocket::TcpSocket(QObject *parent)
     m_socket = new QTcpSocket( this );
 
     // Connect the socket's readyRead signal to receiveTcp
-    connect( m_socket, SIGNAL(readyRead()), SLOT( receiveTcp() ) );
+    connect( m_socket, SIGNAL(readyRead()), SLOT(receiveTcp()) );
     connect( m_socket, SIGNAL(connected()), SIGNAL(connected()) );
     connect( m_socket, SIGNAL(disconnected()), SIGNAL(disconnected()) );
     connect( m_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-             SIGNAL(QAbstractSocket::SocketError) );
+             SIGNAL(error(QAbstractSocket::SocketError)) );
 }
 
 __NAMESPACE__::TcpSocket::TcpSocket( QTcpSocket* socket )
@@ -54,7 +54,7 @@ __NAMESPACE__::TcpSocket::TcpSocket( QTcpSocket* socket )
     connect( m_socket, SIGNAL(connected()), SIGNAL(connected()) );
     connect( m_socket, SIGNAL(disconnected()), SIGNAL(disconnected()) );
     connect( m_socket, SIGNAL(error(QAbstractSocket::SocketError)),
-             SIGNAL(QAbstractSocket::SocketError) );
+             SIGNAL(error(QAbstractSocket::SocketError)) );
 }
 
 /*!
