@@ -62,9 +62,9 @@ QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/protobf.pri
 
 # Generate the gtqt source files from the templates & specified idl files
 gtqt_generate.target = $${GTQT_DESTDIR}/gtqt.pro
-gtqt_generate.commands = $${GTQT_DIR}/gtqt indir=$${GTQT_SRC} \
+gtqt_generate.commands = $${GTQT_DIR}/autogen indir=$${GTQT_SRC} \
     outdir=$${GTQT_DESTDIR} idldir=$${IDL_DIR} $${PROTOS}
-gtqt_generate.depends = gtqt_setup $${IDLS} $${GTQT_SRC}/T_* $${GTQT_DIR}/gtqt
+gtqt_generate.depends = gtqt_setup $${IDLS} $${GTQT_SRC}/T_* $${GTQT_DIR}/autogen
 
 QMAKE_CLEAN += $${GTQT_DESTDIR}/*.cpp $${GTQT_DESTDIR}/*.h $${GTQT_DESTDIR}/*.cc
 QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/*.cpp $${GTQT_DESTDIR}/*.h $${GTQT_DESTDIR}/*.cc

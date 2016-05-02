@@ -25,6 +25,7 @@
 
 #include "autogen.h"
 
+// Qt Includes
 #include <QString>
 #include <QDebug>
 #include <QFile>
@@ -35,6 +36,7 @@
 #include <QDir>
 #include <iostream>
 
+// Google's Protocol Compiler Includes
 #include <google/protobuf/compiler/importer.h>
 #include <google/protobuf/descriptor.h>
 
@@ -45,121 +47,160 @@
  */
 Autogen::Autogen()
     : m_verbose( false )
-    , m_InputDir( QCoreApplication::applicationDirPath() )
-    , m_OutputDir( QCoreApplication::applicationDirPath() )
-    , m_IDLDir( QCoreApplication::applicationDirPath() )
+    , m_InputDir( inputDir() )
+    , m_OutputDir( outputDir() )
+    , m_IDLDir( idlDir() )
     , m_switchCaseTemplate( "" )
 {
     // Get a copy of the application arguments
-    QStringList arguments = QCoreApplication::arguments();
+    QStringList args( QCoreApplication::arguments() );
 
     // Remove the program name from the arguments
-    arguments.removeAt( 0 );
+    args.removeAt( 0 );
 
-    // Search for the Input directory flags
-    int index = arguments.indexOf(
-                QRegExp( "indir=\\S*", Qt::CaseInsensitive ) );
-
-    if( index > -1 )
-    {
-        // Remove the indir argument from the arguments list
-        QString temp = arguments.takeAt( index );
-
-        // Remove the "indir=" string from the argument
-        temp.remove( QRegExp( "indir=", Qt::CaseInsensitive ) );
-
-        // Create a directory object to test for the passed directory
-        QDir directory( temp );
-
-        // If the specified directory does not exists
-        if( !directory.exists() )
-        {
-            // Create a relative path string
-            QString rel( QCoreApplication::applicationDirPath() + "/" + temp );
-
-            // Set the testing directory to the relative path
-            directory.setPath( rel );
-
-            // If this directory does not exists
-            if( !directory.exists() )
-            {
-                // Give up looking for the directory.
-                std::cerr << "Specified input directory was not found: "
-                          << qPrintable( temp ) << std::endl;
-
-                // Close the Application immediatly with an error
-                exit( -1 );
-            }
-        }
-
-        // Reaching this points means the tested directory exists
-        m_InputDir.setPath( directory.path() );
-    }
-
-    // Search for the Output directory flags
-    index = arguments.indexOf( QRegExp( "outdir=\\S*", Qt::CaseInsensitive ) );
-
-    if( index > -1 )
-    {
-        QString temp = arguments.takeAt( index );
-        temp.remove( QRegExp( "outdir=", Qt::CaseInsensitive ) );
-        QDir directory( temp );
-
-        if( !directory.exists() )
-        {
-            QString rel( QCoreApplication::applicationDirPath() + "/" + temp );
-
-            directory.setPath( rel );
-
-            if( !directory.exists() )
-            {
-                std::cerr << "Specified output directory was not found: "
-                          << qPrintable( temp ) << std::endl;
-                exit( -1 );
-            }
-        }
-
-        m_OutputDir = directory.path();
-    }
-
-    // Search for the Output directory flags
-    index = arguments.indexOf( QRegExp( "idldir=\\S*", Qt::CaseInsensitive ) );
-
-    if( index > -1 )
-    {
-        QString temp = arguments.takeAt( index );
-        temp.remove( QRegExp( "idldir=", Qt::CaseInsensitive ) );
-        QDir directory( temp );
-
-        if( !directory.exists() )
-        {
-            QString rel( QCoreApplication::applicationDirPath() + "/" + temp );
-
-            directory.setPath( rel );
-
-            if( !directory.exists() )
-            {
-                std::cerr << "Specified idl directory was not found: "
-                          << qPrintable( temp ) << std::endl;
-                exit( -1 );
-            }
-        }
-
-        m_IDLDir = directory.path();
-    }
+    // Remove indir, outdir and idldir arguments
+    args = args.filter( QRegExp("^(?!indir=\\S*)",Qt::CaseInsensitive) );
+    args = args.filter( QRegExp("^(?!outdir=\\S*)",Qt::CaseInsensitive) );
+    args = args.filter( QRegExp("^(?!idldir=\\S*)",Qt::CaseInsensitive) );
 
     QString scopename( "gtqt" );
-    index = arguments.indexOf( QRegExp( "namespace=\\S*", Qt::CaseInsensitive ) );
+    int index = args.indexOf( QRegExp( "namespace=\\S*", Qt::CaseInsensitive ) );
 
     if( index > -1 )
     {
-        QString scopename = arguments.takeAt( index );
+        QString scopename = args.takeAt( index );
         scopename.remove( QRegExp( "namespace=", Qt::CaseInsensitive ) );
     }
 
     m_Autocode.insert( QString( "__NAMESPACE__" ), scopename );
 
-    addIdlFileList( arguments );
+    addIdlFileList( args );
+}
+
+QString Autogen::inputDir()
+{
+    QStringList const args( QCoreApplication::arguments() );
+    int const index( args.indexOf(QRegExp("indir=\\S*", Qt::CaseInsensitive)) );
+
+    if ( index == -1 )
+    {
+        return QCoreApplication::applicationDirPath();
+    }
+    else
+    {
+        // Remove the indir argument from the argument list
+        QString temp( args.at(index) );
+
+        // Remove the "indir=" string from the argument
+        temp.remove( QRegExp("indir=", Qt::CaseInsensitive) );
+
+        if ( !QDir(temp).exists() )
+        {
+            // Assume it is a relative path
+            QString relative( QCoreApplication::applicationDirPath()+"/"+temp );
+
+            // Check the directory exists
+            if ( !QDir(relative).exists() )
+            {
+                // Give up looking for the directory
+                std::cerr << "Specified input directory was not found: "
+                          << temp.toStdString() << std::endl;
+
+                // Close the application with an error
+                exit(1);
+            }
+
+            // Return the relative path to be used
+            return relative;
+        }
+
+        // Return the full path to be used
+        return temp;
+    }
+}
+
+QString Autogen::outputDir()
+{
+    QStringList const args( QCoreApplication::arguments() );
+    int const index( args.indexOf(QRegExp("outdir=\\S*", Qt::CaseInsensitive)) );
+
+    if ( index == -1 )
+    {
+        return QCoreApplication::applicationDirPath();
+    }
+    else
+    {
+        // Remove the indir argument from the argument list
+        QString temp( args.at(index) );
+
+        // Remove the "indir=" string from the argument
+        temp.remove( QRegExp("outdir=", Qt::CaseInsensitive) );
+
+        if ( !QDir(temp).exists() )
+        {
+            // Assume it is a relative path
+            QString relative( QCoreApplication::applicationDirPath()+"/"+temp );
+
+            // Check the directory exists
+            if ( !QDir(relative).exists() )
+            {
+                // Give up looking for the directory
+                std::cerr << "Specified output directory was not found: "
+                          << temp.toStdString() << std::endl;
+
+                // Close the application with an error
+                exit(1);
+            }
+
+            // Return the relative path to be used
+            return relative;
+        }
+
+        // Return the full path to be used
+        return temp;
+    }
+}
+
+QString Autogen::idlDir()
+{
+    QStringList const args( QCoreApplication::arguments() );
+    int const index( args.indexOf(QRegExp("idldir=\\S*", Qt::CaseInsensitive)) );
+
+    if ( index == -1 )
+    {
+        return QCoreApplication::applicationDirPath();
+    }
+    else
+    {
+        // Remove the indir argument from the argument list
+        QString temp( args.at(index) );
+
+        // Remove the "indir=" string from the argument
+        temp.remove( QRegExp("idldir=", Qt::CaseInsensitive) );
+
+        if ( !QDir(temp).exists() )
+        {
+            // Assume it is a relative path
+            QString relative( QCoreApplication::applicationDirPath()+"/"+temp );
+
+            // Check the directory exists
+            if ( !QDir(relative).exists() )
+            {
+                // Give up looking for the directory
+                std::cerr << "Specified idldir was not found: "
+                          << temp.toStdString() << std::endl;
+
+                // Close the application with an error
+                exit(1);
+            }
+
+            // Return the relative path to be used
+            return relative;
+        }
+
+        // Return the full path to be used
+        return temp;
+    }
 }
 
 /*!

@@ -49,6 +49,7 @@ public:
 
     Autogen();
 
+
     void addIdlFileList( const QStringList& fileList );
 
     void addIdlFile( const QString& fileName );
@@ -56,6 +57,10 @@ public:
     int generate();
 
 private:
+    static QString inputDir();
+    static QString outputDir();
+    static QString idlDir();
+
     void genRepeatCode( QByteArray &inputData );
 
     void findMessages();
@@ -68,10 +73,10 @@ private:
     bool m_verbose;
 
     // The directory where the template files exists
-    QDir m_InputDir;
+    QDir const m_InputDir;
 
     // The directory to place the generated files
-    QDir m_OutputDir;
+    QDir const m_OutputDir;
 
     // The directory containing the input idls (proto files)
     QDir m_IDLDir;

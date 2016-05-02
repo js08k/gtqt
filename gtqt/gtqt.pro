@@ -1,7 +1,7 @@
 QT       += core
 QT       -= gui
 
-TARGET = gtqt
+TARGET = autogen
 CONFIG   += console
 CONFIG   -= app_bundle
 

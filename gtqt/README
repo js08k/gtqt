@@ -2,7 +2,7 @@
 * Prerequisites for GtQt                                                      *
 *******************************************************************************
     - Qt
-    - Google protocol buffers
+    - Google protocol buffers (Only the protocol compiler is needed)
 
     Qt:
 

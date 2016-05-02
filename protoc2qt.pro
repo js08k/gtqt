@@ -14,9 +14,12 @@
 
 TEMPLATE = subdirs
 
-CONFIG += ordered
-
 SUBDIRS	= \
         gtqt \
         example
 
+example.depends = gtqt
+example.subdir = example
+
+OTHER_FILES += \
+    README.md
