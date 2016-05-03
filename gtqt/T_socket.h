@@ -25,12 +25,13 @@
 #ifndef ___NAMESPACE___socket_h
 #define ___NAMESPACE___socket_h
 
+#include "export.h"
 #include "datapackage.h"
 //#include "receiver.h"
 
 namespace __NAMESPACE__
 {
-class Socket
+class DECL_EXPORT Socket
 {
 private:
 

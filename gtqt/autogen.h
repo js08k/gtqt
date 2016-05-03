@@ -60,6 +60,7 @@ private:
     static QString inputDir();
     static QString outputDir();
     static QString idlDir();
+    static QString scopeName();
 
     void genRepeatCode( QByteArray &inputData );
 
@@ -79,16 +80,13 @@ private:
     QDir const m_OutputDir;
 
     // The directory containing the input idls (proto files)
-    QDir m_IDLDir;
+    QDir const m_IDLDir;
 
     // The list of files which need to be parsed
     QStringList m_fileList;
 
     // List of messages found
     QMap<QString,int32_t> m_messages;
-
-    // Template for creating a switch statment
-    QString m_switchCaseTemplate;
 
     /*** Autogen keywords with the data to replace them ***/
     QMap<QString, QString> m_Autocode;

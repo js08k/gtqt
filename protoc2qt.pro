@@ -15,8 +15,8 @@
 TEMPLATE = subdirs
 
 SUBDIRS	= \
-        gtqt \
-        example
+    gtqt \
+    example
 
 example.depends = gtqt
 example.subdir = example

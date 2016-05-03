@@ -26,6 +26,7 @@
 #define ___NAMESPACE___udpsocket_h
 
 // GtQt Includes
+#include "export.h"
 #include "socket.h"
 
 // Qt Includes
@@ -36,7 +37,7 @@ class QHostAddress;
 
 namespace __NAMESPACE__ { class UdpSocket; }
 
-class __NAMESPACE__::UdpSocket
+class DECL_EXPORT __NAMESPACE__::UdpSocket
         : public QObject
         , public __NAMESPACE__::Socket
 {

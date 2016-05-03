@@ -21,41 +21,19 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#ifndef __NAMESPACE__export_h
+#define __NAMESPACE__export_h
 
-#ifndef __NAMESPACE__tcpserver_h
-#define __NAMESPACE__tcpserver_h
+#include <QtGlobal>
 
-
-#include "export.h"
-// Qt Includes
-#include <tcpsocket.h>
-
-class QTcpServer;
-
-namespace __NAMESPACE__
-{
-class TcpSocket;
-
-class DECL_EXPORT TcpServer
-        : public QObject
-{
-    Q_OBJECT
-public:
-    explicit TcpServer( QObject* parent = 0 );
-    virtual ~TcpServer();
-    void listen( const QHostAddress&, quint16 );
-    TcpSocket* nextPendingConnection();
-
-signals:
-    void newConnection();
-
-private slots:
-    void addDetails();
-
-private:
-    QTcpServer* m_tcpServer;
-    QList<TcpSocket*> m_pending;
-};
-}
+#ifdef Q_OS_UNIX
+#  define DECL_EXPORT
+#else
+#  ifdef DLL_EXPORT
+#    define DECL_EXPORT __declspec(dllexport)
+#  else
+#    define DECL_EXPORT
+#  endif
+#endif
 
 #endif

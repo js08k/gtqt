@@ -25,37 +25,42 @@
 #ifndef ___NAMESPACE___message_h
 #define ___NAMESPACE___message_h
 
+#include "export.h"
+
 // Includes that the autogenerator will need to add
 __PROTO_INCLUDES__
 
-namespace __NAMESPACE__
-{
-    template <typename T> class Traits
-    {
-    public:
+namespace __NAMESPACE__ { template <typename T> class Traits; }
+__REPEAT_START__
+namespace __NAMESPACE__ { class __KEY__; }
+__REPEAT_END__
 
-        /*!
+template <typename T> class DECL_EXPORT __NAMESPACE__::Traits
+{
+public:
+
+    /*!
          * \brief GoogleType This type should be set from T to the proper
          * type in a partial template specification.
          */
-        typedef T GoogleType;
+    typedef T GoogleType;
 
-        /*!
+    /*!
          * \brief QtType This type should be set from T to the proper type
          * in a partial template specification.
          */
-        typedef T QtType;
+    typedef T QtType;
 
-        // Default KeyCount is zero
-//        enum { KeyCount = 0 };
+    // Default KeyCount is zero
+    //        enum { KeyCount = 0 };
 
-        // Single KeyType is defined as K
-//        typedef T K;
+    // Single KeyType is defined as K
+    //        typedef T K;
 
-        // Single KeyType conversion functions
-//        const K& key( const T& );
+    // Single KeyType conversion functions
+    //        const K& key( const T& );
 
-        /*!
+    /*!
          * \brief googleToQt Converts data from a google type into a Qt Type.
          * This should have a partial template implementation for each message
          * type that will need to make use of these functions.
@@ -63,9 +68,9 @@ namespace __NAMESPACE__
          * \param QtType mutable refrence to the qt typed data destination.
          * \return True on a successful conversion, otherwise False.
          */
-        bool toQtType( const GoogleType& googletype, QtType& qttype ) const;
+    bool toQtType( const GoogleType& googletype, QtType& qttype ) const;
 
-        /*!
+    /*!
          * \brief googleFromQt Converts data from a Qt type into a google type.
          * This should have a partial template implementation for each message
          * type that will need to make use of these functions.
@@ -73,42 +78,41 @@ namespace __NAMESPACE__
          * \param qttype a const refrence to the source of the data.
          * \return True on a successful conversion, otherwise False.
          */
-        bool fromQtType( GoogleType& googletype, const QtType& qttype ) const;
+    bool fromQtType( GoogleType& googletype, const QtType& qttype ) const;
 
-//        bool operator == ( const T& ) const;
+    //        bool operator == ( const T& ) const;
 
-//        bool operator < ( const T& ) const;
+    //        bool operator < ( const T& ) const;
 
-    };
+};
 
 __REPEAT_START__
-    class __KEY__
-            : public __PACKAGE__::__KEY__
-    {
-    public:
-        /*!
+class DECL_EXPORT __NAMESPACE__::__KEY__
+        : public __PACKAGE__::__KEY__
+{
+public:
+    /*!
         * \brief __KEY__ default constructor
         */
-        __KEY__()
-        {
-            // Intentionally doing nothing here
-        }
+    __KEY__()
+    {
+        // Intentionally doing nothing here
+    }
 
-        __KEY__( const __PACKAGE__::__KEY__& orig )
-            : __PACKAGE__::__KEY__( orig )
-        {
+    __KEY__( const __PACKAGE__::__KEY__& orig )
+        : __PACKAGE__::__KEY__( orig )
+    {
 
-        }
+    }
 
-        /*!
+    /*!
         * \brief __KEY__ default deconstructor
         */
-        virtual ~__KEY__()
-        {
-            // Intentionally doing nothing here
-        }
-    };
+    virtual ~__KEY__()
+    {
+        // Intentionally doing nothing here
+    }
+};
 __REPEAT_END__
-}
 
 #endif // MESSAGE_H

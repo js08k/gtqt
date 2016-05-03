@@ -15,11 +15,12 @@ SOURCES += \
     autogen.cpp \
 
 HEADERS += \
-    autogen.h \
+    autogen.h
 
 # Google to Qt interface file templates
 OTHER_FILES += \
     README \
+    T_export.h \
     gtqtbuild.pri \
     T_gtqt.pro \
     protobf.pri \

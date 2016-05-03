@@ -50,30 +50,23 @@ Autogen::Autogen()
     , m_InputDir( inputDir() )
     , m_OutputDir( outputDir() )
     , m_IDLDir( idlDir() )
-    , m_switchCaseTemplate( "" )
 {
+    // Add the scopename to the list of string replace keys
+    m_Autocode.insert( "__NAMESPACE__", scopeName() );
+
     // Get a copy of the application arguments
     QStringList args( QCoreApplication::arguments() );
 
     // Remove the program name from the arguments
-    args.removeAt( 0 );
+    args.takeFirst();
 
     // Remove indir, outdir and idldir arguments
     args = args.filter( QRegExp("^(?!indir=\\S*)",Qt::CaseInsensitive) );
     args = args.filter( QRegExp("^(?!outdir=\\S*)",Qt::CaseInsensitive) );
     args = args.filter( QRegExp("^(?!idldir=\\S*)",Qt::CaseInsensitive) );
+    args = args.filter( QRegExp("^(?!namespace=\\S*)",Qt::CaseInsensitive) );
 
-    QString scopename( "gtqt" );
-    int index = args.indexOf( QRegExp( "namespace=\\S*", Qt::CaseInsensitive ) );
-
-    if( index > -1 )
-    {
-        QString scopename = args.takeAt( index );
-        scopename.remove( QRegExp( "namespace=", Qt::CaseInsensitive ) );
-    }
-
-    m_Autocode.insert( QString( "__NAMESPACE__" ), scopename );
-
+    // Assume all resulting arguments are idl files
     addIdlFileList( args );
 }
 
@@ -200,6 +193,25 @@ QString Autogen::idlDir()
 
         // Return the full path to be used
         return temp;
+    }
+}
+
+QString Autogen::scopeName()
+{
+    QStringList const args( QCoreApplication::arguments() );
+    int const index( args.indexOf(QRegExp("namespace=\\S*", Qt::CaseInsensitive)) );
+
+    if ( index == -1 )
+    {
+        return QString("gtqt");
+    }
+    else
+    {
+        QString scopename( args.at(index) );
+        scopename.remove( QRegExp("namespace=",Qt::CaseInsensitive) );
+
+        // TODO Some error checking to make sure the namespace is acceptable
+        return scopename;
     }
 }
 

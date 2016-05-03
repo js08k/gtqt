@@ -32,6 +32,9 @@ GTQT_DIR = $${OUT_PWD}/../../gtqt
 # Destination of the autogenrated library
 GTQT_DESTDIR = $${OUT_PWD}
 
+# Uncomment to compile the gtqt library as static
+#GTQT_CONFIG += staticlib
+
 # Google protocol buffer IDL files
 PROTOS = \
     example1.proto \

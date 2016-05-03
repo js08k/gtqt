@@ -71,7 +71,7 @@ QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/*.cpp $${GTQT_DESTDIR}/*.h $${GTQT_DESTDIR}/
 
 # Run qmake in gtqt's output directory
 gtqt_configure.target = $${GTQT_DESTDIR}/gtqt.Make
-gtqt_configure.commands = qmake $${GTQT_DESTDIR} -o $${GTQT_DESTDIR}/gtqt.Make
+gtqt_configure.commands = qmake CONFIG+=$${GTQT_CONFIG} $${GTQT_DESTDIR} -o $${GTQT_DESTDIR}/gtqt.Make
 gtqt_configure.depends = $${gtqt_generate.target}
 
 QMAKE_CLEAN += $${GTQT_DESTDIR}/*.pro

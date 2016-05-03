@@ -21,10 +21,10 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
 #ifndef ___NAMESPACE___datapackage_h
 #define ___NAMESPACE___datapackage_h
 
+#include "export.h"
 #include <message.h>
 
 #include <QSharedData>
@@ -39,7 +39,7 @@ namespace __NAMESPACE__
  *  without the class explicitly inheriting QSharedData.
  */
 template <class T>
-class DataPackageHelper : public T, public QSharedData
+class DECL_EXPORT DataPackageHelper : public T, public QSharedData
 {
 public:
     // Expect T to have a default constructor
@@ -54,7 +54,7 @@ public:
  *  could be hidden, to control the end users interaction with a Shared class.
  */
 template <class T>
-class DataPackage
+class DECL_EXPORT DataPackage
         : private QSharedDataPointer<DataPackageHelper<T> >
 {
 public:

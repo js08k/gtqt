@@ -26,6 +26,7 @@
 #define ___NAMESPACE___sslsocket_h
 
 // GtQt Includes
+#include "export.h"
 #include "socket.h"
 
 // Qt Includes
@@ -33,7 +34,7 @@
 
 namespace __NAMESPACE__
 {
-class SslSocket : public QSslSocket, public __NAMESPACE__::Socket
+class DECL_EXPORT SslSocket : public QSslSocket, public __NAMESPACE__::Socket
 {
     Q_OBJECT
 public:

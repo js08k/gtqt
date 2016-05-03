@@ -26,6 +26,7 @@
 #define ___NAMESPACE___tcpsocket_h
 
 // GtQt Includes
+#include "export.h"
 #include "socket.h"
 
 // Qt Includes
@@ -35,7 +36,7 @@ class QHostAddress;
 
 namespace __NAMESPACE__ { class TcpSocket; }
 
-class __NAMESPACE__::TcpSocket
+class DECL_EXPORT __NAMESPACE__::TcpSocket
         : public QObject
         , public __NAMESPACE__::Socket
 {

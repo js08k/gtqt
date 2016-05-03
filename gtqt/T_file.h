@@ -25,13 +25,14 @@
 #ifndef ___NAMESPACE___file_h
 #define ___NAMESPACE___file_h
 
+#include "export.h"
 #include "socket.h"
 
 #include <QFile>
 
 namespace __NAMESPACE__
 {
-class File
+class DECL_EXPORT File
         : public QObject
         , public __NAMESPACE__::Socket
 {

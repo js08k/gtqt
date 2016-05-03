@@ -37,6 +37,14 @@ TEMPLATE = lib
 
 DEFINES += COMMS_LIBRARY
 
+if(contains(CONFIG,staticlib)) {
+message( Compiling static )
+    DEFINES -= DLL_EXPORT
+} else {
+message( Compiling dynamic )
+    DEFINES += DLL_EXPORT
+}
+
 SOURCES += \
     socket.cpp  \
     udpsocket.cpp \
@@ -46,6 +54,7 @@ SOURCES += \
 #    sslsocket.cpp
 
 HEADERS += \
+    export.h \
     message.h \
     datapackage.h \
     socket.h \
