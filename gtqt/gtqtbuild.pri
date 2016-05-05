@@ -34,22 +34,26 @@ isEmpty(PROTOS) {
 isEmpty(IDL_DIR) {
     error( IDL_DIR variable must be defined before including gtqtbuild.pri )
 }
-win32:IDL_DIR=replace(IDL_DIR,/,\\)
+win32:IDL_DIR=$$replace(IDL_DIR,/,\\)
 
 isEmpty(GTQT_DIR) {
     error( GTQT_DIR variable must be defined before including gtqtbuild.pri )
 }
-win32:IDL_DIR=replace(GTQT_DIR,/,\\)
+win32:CONFIG(debug,debug|release) {
+    GTQT_DIR=$$replace(GTQT_DIR,/,\\)\\debug
+} else {
+    GTQT_DIR=$$replace(GTQT_DIR,/,\\)\\release
+}
 
 isEmpty(GTQT_SRC) {
     error( GTQT_SRC variable must be defined before including gtqtbuild.pri )
 }
-win32:IDL_DIR=replace(GTQT_SRC,/,\\)
+win32:GTQT_SRC=$$replace(GTQT_SRC,/,\\)
 
 isEmpty(GTQT_DESTDIR) {
     error( GTQT_DESTDIR variable must be defined before including the gtqtbuild.pri)
 }
-win32:IDL_DIR=replace(GTQT_DESTDIR,/,\\)
+win32:GTQT_DESTDIR=$$replace(GTQT_DESTDIR,/,\\)
 
 for(p, PROTOS):IDLS += $${_PRO_FILE_PWD_}/$${p}
 for(p, PROTOS):IDLS_OUT += $${GTQT_DESTDIR}/$${p}
@@ -68,9 +72,12 @@ QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/protobf.pri
 
 # Generate the gtqt source files from the templates & specified idl files
 gtqt_generate.target = $${GTQT_DESTDIR}/gtqt.pro
-gtqt_generate.commands = $${GTQT_DIR}/autogen indir=$${GTQT_SRC} \
+unix:gtqt_generate.commands = $${GTQT_DIR}/autogen indir=$${GTQT_SRC} \
     outdir=$${GTQT_DESTDIR} idldir=$${IDL_DIR} $${PROTOS}
-gtqt_generate.depends = gtqt_setup $${IDLS} $${GTQT_SRC}/T_* $${GTQT_DIR}/autogen
+unix:gtqt_generate.depends = gtqt_setup $${IDLS} $${GTQT_SRC}/T_* $${GTQT_DIR}/autogen
+win32:gtqt_generate.commands = $${GTQT_DIR}\\autogen indir=$${GTQT_SRC} \
+    outdir=$${GTQT_DESTDIR} idldir=$${IDL_DIR} $${PROTOS}
+win32:gtqt_generate.depends = gtqt_setup $${IDLS} $${GTQT_SRC}/T_*
 
 QMAKE_CLEAN += $${GTQT_DESTDIR}/*.cpp $${GTQT_DESTDIR}/*.h $${GTQT_DESTDIR}/*.cc
 QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/*.cpp $${GTQT_DESTDIR}/*.h $${GTQT_DESTDIR}/*.cc
@@ -84,7 +91,8 @@ QMAKE_CLEAN += $${GTQT_DESTDIR}/*.pro
 QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/*.pro $${GTQT_DESTDIR}/gtqt.Make
 
 # Build the gtqt
-gtqt_build.commands = make -C $${GTQT_DESTDIR} -f gtqt.Make
+unix:gtqt_build.commands = make -C $${GTQT_DESTDIR} -f gtqt.Make
+win32:gtqt_build.commands = make -C $${GTQT_DESTDIR} -f gtqt.Make
 gtqt_build.depends = gtqt_configure
 
 QMAKE_CLEAN += $${GTQT_DESTDIR}/*.o
