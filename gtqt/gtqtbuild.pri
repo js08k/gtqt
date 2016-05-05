@@ -34,28 +34,34 @@ isEmpty(PROTOS) {
 isEmpty(IDL_DIR) {
     error( IDL_DIR variable must be defined before including gtqtbuild.pri )
 }
+win32:IDL_DIR=replace(IDL_DIR,/,\\)
 
 isEmpty(GTQT_DIR) {
     error( GTQT_DIR variable must be defined before including gtqtbuild.pri )
 }
+win32:IDL_DIR=replace(GTQT_DIR,/,\\)
 
 isEmpty(GTQT_SRC) {
     error( GTQT_SRC variable must be defined before including gtqtbuild.pri )
 }
+win32:IDL_DIR=replace(GTQT_SRC,/,\\)
 
 isEmpty(GTQT_DESTDIR) {
     error( GTQT_DESTDIR variable must be defined before including the gtqtbuild.pri)
 }
+win32:IDL_DIR=replace(GTQT_DESTDIR,/,\\)
 
 for(p, PROTOS):IDLS += $${_PRO_FILE_PWD_}/$${p}
 for(p, PROTOS):IDLS_OUT += $${GTQT_DESTDIR}/$${p}
 
 # Create the output directory if it does not already exists
-gtqt_outdir.commands = mkdir -p $${GTQT_DESTDIR}
+unix:gtqt_outdir.commands = mkdir -p $${GTQT_DESTDIR}
+win32:gtqt_outdir.commands = if not exists $${GTQT_DESTDIR} md $${GTQT_DESTDIR}
 
 # Copy the protobf.pri file to the gtqt's output directory
 gtqt_setup.target = $${GTQT_DESTDIR}/protobf.pri
-gtqt_setup.commands = cp $${GTQT_SRC}/protobf.pri $${GTQT_DESTDIR}
+unix:gtqt_setup.commands = cp $${GTQT_SRC}/protobf.pri $${GTQT_DESTDIR}
+win32:gtqt_setup.commands = copy $${GTQT_SRC}\\protobf.pri $${GTQT_DESTDIR}
 
 QMAKE_CLEAN += $${GTQT_DESTDIR}/protobf.pri
 QMAKE_DISTCLEAN += $${GTQT_DESTDIR}/protobf.pri
