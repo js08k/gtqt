@@ -512,7 +512,7 @@ bool Autogen::writeFile(const QString &fileName)
 int32_t Autogen::hash( const QString &data )
 {
     // Prime used for the FNV algorithm
-    const int64_t FNVPrime = 1099511628211;
+    int64_t const FNVPrime = 2147483647;
 
     // hash to calculate
     int64_t hash = 1;
@@ -523,8 +523,8 @@ int32_t Autogen::hash( const QString &data )
     // Hash in each byte of the QByteArray
     for( int i = 0; i < toHash.size(); ++i )
     {
-        hash = hash * FNVPrime;
-        hash = hash ^ toHash[ i ];
+        hash *= FNVPrime;
+        hash ^= toHash[i];
     }
 
     // Return the XOR fold of the hash
