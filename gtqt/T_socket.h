@@ -29,9 +29,9 @@
 #include "datapackage.h"
 //#include "receiver.h"
 
-namespace __NAMESPACE__
-{
-class DECL_EXPORT Socket
+namespace __NAMESPACE__ { class DECL_EXPORT Socket; }
+
+class DECL_EXPORT __NAMESPACE__::Socket
 {
 private:
 
@@ -75,6 +75,5 @@ __REPEAT_END__
     //! Counter to track the amount of data transmitted by this socket
     int m_uploadCount;
 };
-}
 
 #endif // ___NAMESPACE___socket_h

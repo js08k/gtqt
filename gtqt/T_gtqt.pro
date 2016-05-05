@@ -38,10 +38,8 @@ TEMPLATE = lib
 DEFINES += COMMS_LIBRARY
 
 if(contains(CONFIG,staticlib)) {
-message( Compiling static )
     DEFINES -= DLL_EXPORT
 } else {
-message( Compiling dynamic )
     DEFINES += DLL_EXPORT
 }
 

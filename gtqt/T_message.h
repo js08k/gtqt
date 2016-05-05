@@ -30,9 +30,9 @@
 // Includes that the autogenerator will need to add
 __PROTO_INCLUDES__
 
-namespace __NAMESPACE__ { template <typename T> class Traits; }
+namespace __NAMESPACE__ { template <typename T> class DECL_EXPORT Traits; }
 __REPEAT_START__
-namespace __NAMESPACE__ { class __KEY__; }
+namespace __NAMESPACE__ { class DECL_EXPORT __KEY__; }
 __REPEAT_END__
 
 template <typename T> class DECL_EXPORT __NAMESPACE__::Traits

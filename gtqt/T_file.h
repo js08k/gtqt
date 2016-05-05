@@ -30,9 +30,9 @@
 
 #include <QFile>
 
-namespace __NAMESPACE__
-{
-class DECL_EXPORT File
+namespace __NAMESPACE__ { class DECL_EXPORT File; }
+
+class DECL_EXPORT __NAMESPACE__::File
         : public QObject
         , public __NAMESPACE__::Socket
 {
@@ -67,6 +67,5 @@ __REPEAT_END__
 
     QFile* m_file;
 };
-}
 
 #endif // ___NAMESPACE___file_h

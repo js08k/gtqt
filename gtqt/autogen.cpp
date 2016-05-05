@@ -538,8 +538,8 @@ int32_t Autogen::hash( const QString &data )
 void Autogen::genRepeatCode( QByteArray &inputData )
 {
     // The start and stop keywords which define the template repeat block
-    const QString StartKeyWord( "__REPEAT_START__" );
-    const QString EndKeyWord( "__REPEAT_END__" );
+    QString const StartKeyWord( "__REPEAT_START__" );
+    QString const EndKeyWord( "__REPEAT_END__" );
 
     // Fill any repeat locations with the following
     QRegExp repeatExp( StartKeyWord + "(.*)" + EndKeyWord );

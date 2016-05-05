@@ -32,9 +32,11 @@
 // Qt Includes
 #include <QSslSocket>
 
-namespace __NAMESPACE__
-{
-class DECL_EXPORT SslSocket : public QSslSocket, public __NAMESPACE__::Socket
+namespace __NAMESPACE__ { class DECL_EXPORT SslSocket; }
+
+class DECL_EXPORT __NAMESPACE__::SslSocket
+        : public QSslSocket
+        , public __NAMESPACE__::Socket
 {
     Q_OBJECT
 public:
@@ -65,6 +67,5 @@ private slots:
     // Slot called when data has arrived from a peer port
     void receiveSsl();
 };
-}
 
 #endif // SSLSOCKET_H

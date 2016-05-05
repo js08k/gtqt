@@ -32,11 +32,10 @@
 
 class QTcpServer;
 
-namespace __NAMESPACE__
-{
-class TcpSocket;
+namespace __NAMESPACE__ { class DECL_EXPORT TcpSocket; }
+namespace __NAMESPACE__ { class DECL_EXPORT TcpServer; }
 
-class DECL_EXPORT TcpServer
+class DECL_EXPORT __NAMESPACE__::TcpServer
         : public QObject
 {
     Q_OBJECT
@@ -54,8 +53,7 @@ private slots:
 
 private:
     QTcpServer* m_tcpServer;
-    QList<TcpSocket*> m_pending;
+    QList<__NAMESPACE__::TcpSocket*> m_pending;
 };
-}
 
 #endif

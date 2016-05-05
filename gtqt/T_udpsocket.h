@@ -35,7 +35,7 @@
 
 class QHostAddress;
 
-namespace __NAMESPACE__ { class UdpSocket; }
+namespace __NAMESPACE__ { class DECL_EXPORT UdpSocket; }
 
 class DECL_EXPORT __NAMESPACE__::UdpSocket
         : public QObject
@@ -95,7 +95,8 @@ __REPEAT_END__
 
 template <class T>
 void __NAMESPACE__::UdpSocket::writeDatagram(
-        DataPackage<T> const& message, QHostAddress const& host, quint16 port )
+        __NAMESPACE__::DataPackage<T> const& message,
+        QHostAddress const& host, quint16 port )
 {
     QMutexLocker locker( &m_serverLock );
     Q_UNUSED( locker )
