@@ -541,12 +541,6 @@ void Autogen::genRepeatCode( QByteArray &inputData )
     QString const StartKeyWord( "__REPEAT_START__" );
     QString const EndKeyWord( "__REPEAT_END__" );
 
-    // Fill any repeat locations with the following
-    QRegExp repeatExp( StartKeyWord + "(.*)" + EndKeyWord );
-
-    // Set the regular expression to be non-greedy
-    repeatExp.setMinimal( true );
-
     // Variable to capture the index locatons of the start and stop
     // of the repeat block.
     int start, end;
@@ -554,100 +548,54 @@ void Autogen::genRepeatCode( QByteArray &inputData )
     do
     {
         // Get the index of the start of the Repeate block keyword
-        start = inputData.indexOf( StartKeyWord );
-
-        // Search for the end of line that comes after the start keyword
-        int newline = inputData.indexOf( "\n", start );
+        start = inputData.indexOf( StartKeyWord+"\n" );
 
         // Verify the operation was successful
-        if( ( start > -1 ) && ( newline > -1 ) )
-        {
-            // Remove the entiere line containing the keyword.
-            // Start index will still be valid.
-            inputData.remove( start, newline - start + 1 );
-        }
-        else if( start > -1 )
-        {
-            std::cerr << "__REPEAT_START__ keyword was not followed by a newline." << std::endl;
-            exit( -1 );
-        }
+        if ( start == -1 ) { break; }
+
+        // Remove the entiere line containing the keyword.
+        inputData.remove( start, StartKeyWord.length()+1 );
 
         // Get the index of the end of the Repeate block keyword
-        end = inputData.indexOf( EndKeyWord );
+        end = inputData.indexOf( EndKeyWord+"\n" );
 
-        // Search for the end of line that comes after the end keyword
-        newline = inputData.indexOf( "\n", end );
-
-        // Verify the operation was successful
-        if( ( end > -1 ) && ( newline > -1 ) )
+        if ( end == -1 )
         {
-            // Remove the entire line containing the keyword
-            // end index will still be valid.
-            inputData.remove( end, newline - end + 1 );
-        }
-        else if( end > -1 )
-        {
-            std::cerr << "__REPEAT_START__ keyword was not followed by a newline." << std::endl;
-            exit( -1 );
+            std::cerr << "__REPEAT_START__ token found without a coorisponding "
+                         "__REPEAT_END__ token" << std::endl;
+            exit(-1);
         }
 
-        if( ( start > -1 ) && ( end > -1 ) && ( end > start ) )
+        // Remove the entire line containing the keyword
+        inputData.remove( end, EndKeyWord.length() + 1 );
+
+        // Copy out the template for the repeate code
+        QString const _template( inputData.mid(start, end-start) );
+
+        // String to contain the repeateCode that is being generated
+        QString codeBlock;
+
+        // Iterator for cycling through the list of messages that have been found
+        QMapIterator<QString,int32_t> iterator( m_messages );
+
+        // Iterate through the list...
+        while( iterator.hasNext() )
         {
+            iterator.next();
 
-            // Copy out the template for the repeate code
-            const QString repeatTemplate =
-                    QString( inputData.mid( start, end - start ) ).remove( StartKeyWord );
+            // Append the repeatTemplate code to the repeateCode
+            codeBlock.append(_template);
 
+            // Replace the KeyWord, "__KEY__", with the iterator Key
+            codeBlock.replace( "__KEY__", iterator.key().toUtf8() );
 
-            // String to contain the repeateCode that is being generated
-            QString repeatCode;
-
-            // Iterator for cycling through the list of messages that have been found
-            QMapIterator<QString,int32_t> iterator( m_messages );
-
-            int repeatloop = 0;
-
-            // Iterate through the list...
-            while( iterator.hasNext() )
-            {
-                iterator.next();
-
-                // Append the repeatTemplate code to the repeateCode
-                repeatCode.append( repeatTemplate );
-
-                // Replace the KeyWord, "__KEY__", with the iterator Key
-                repeatCode.replace( "__KEY__", iterator.key().toUtf8() );
-
-                // Replace the KeyWord, "__VALUE__" with the all caps
-                // version of the Key (this is an enumeration)
-                repeatCode.replace( "__VALUE__", iterator.key().toUpper().toUtf8() );
-
-                if( iterator.hasNext() )
-                {
-                    // Append a newline between loops for readability
-                    repeatCode.append( "\n" );
-
-                    if( m_verbose )
-                    {
-                        // Insert a informational comment for help in debuging when
-                        // writing the autogen code
-                        repeatCode.append( "// Repeatblock: loop number" +
-                                           QString::number( ++repeatloop ) + "\n" );
-                    }
-                }
-            }
-
-            if( m_verbose )
-            {
-                // Insert a informational comment for help in debuging when
-                // writing the autogen code
-                repeatCode.prepend( "// Repeatblock: Start\n" );
-                repeatCode.append( "// Repeatblock: End\n" );
-            }
-
-            // Replace the repeat block (including the keywords)
-            inputData.replace( start, end - start, qPrintable( repeatCode ) );
+            // Replace the KeyWord, "__VALUE__" with the all caps
+            // version of the Key (this is an enumeration)
+            codeBlock.replace( "__VALUE__", iterator.key().toUpper().toUtf8() );
         }
+
+        // Replace the repeat block (including the keywords)
+        inputData.replace( _template, codeBlock.toUtf8() );
     }
-    while( ( start > -1 ) && ( end > -1 ) );
+    while( (start > -1) && (end > -1) );
 }
