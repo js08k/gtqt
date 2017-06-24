@@ -27,15 +27,18 @@
 #include <udpsocket.h>
 #include <tcpserver.h>
 #include <tcpsocket.h>
+#include <peerlink.h>
 //#include <receiver.h>
 #include <QDebug>
 
 Server::Server(QObject *parent)
     : QObject(parent)
-    , m_testTcp( true )
+    , m_testTcp( false )
+    , m_testUdp( false )
     , m_udpServer( NULL )
     , m_tcpServer( NULL )
     , m_tcpSocket( NULL )
+    , m_link( NULL )
 {
     const QHostAddress addr( QHostAddress::LocalHost );
     const u_int16_t port( 6000 );
@@ -46,7 +49,7 @@ Server::Server(QObject *parent)
         connect( m_tcpServer, SIGNAL(newConnection()), SLOT(newConnection()) );
         m_tcpServer->listen( addr, port );
     }
-    else
+    else if ( m_testUdp )
     {
         m_udpServer = new gtqt::UdpSocket( this );
         m_udpServer->bind( addr, port );
@@ -54,6 +57,15 @@ Server::Server(QObject *parent)
         connect( m_udpServer, SIGNAL(receive(gtqt::DataPackage<gtqt::ClientType1>)),
                  this, SLOT(receive(gtqt::DataPackage<gtqt::ClientType1>)) );
         connect( m_udpServer, SIGNAL(receive(gtqt::DataPackage<gtqt::ClientType2>)),
+                 this, SLOT(receive(gtqt::DataPackage<gtqt::ClientType2>)) );
+    }
+    else
+    {
+        m_link = new gtqt::PeerLink(this);
+        m_link->listen( addr, port );
+        connect( m_link, SIGNAL(receive(gtqt::DataPackage<gtqt::ClientType1>)),
+                 this, SLOT(receive(gtqt::DataPackage<gtqt::ClientType1>)) );
+        connect( m_link, SIGNAL(receive(gtqt::DataPackage<gtqt::ClientType2>)),
                  this, SLOT(receive(gtqt::DataPackage<gtqt::ClientType2>)) );
     }
 }
@@ -64,9 +76,13 @@ Server::~Server()
     {
         delete m_tcpServer;
     }
-    else
+    else if ( m_testUdp )
     {
         delete m_udpServer;
+    }
+    else
+    {
+        delete m_link;
     }
 }
 
@@ -95,11 +111,15 @@ void Server::receive(const gtqt::DataPackage<gtqt::ClientType1> &data )
             m_tcpSocket->write( st1 );
         }
     }
-    else
+    else if ( m_testUdp )
     {
         const QHostAddress dest( QHostAddress::LocalHost );
         const quint16 port( m_udpServer->peerPort( dest ) );
         m_udpServer->writeDatagram( st1, dest, port );
+    }
+    else
+    {
+        m_link->transmit(st1);
     }
 }
 
@@ -118,10 +138,14 @@ void Server::receive(const gtqt::DataPackage<gtqt::ClientType2> &data )
             m_tcpSocket->write( st2 );
         }
     }
-    else
+    else if ( m_testUdp )
     {
         const QHostAddress dest( QHostAddress::LocalHost );
         const quint16 port( m_udpServer->peerPort( dest ) );
         m_udpServer->writeDatagram( st2, dest, port );
+    }
+    else
+    {
+        m_link->transmit(st2);
     }
 }

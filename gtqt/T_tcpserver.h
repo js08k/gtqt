@@ -42,6 +42,7 @@ class DECL_EXPORT __NAMESPACE__::TcpServer
 public:
     explicit TcpServer( QObject* parent = 0 );
     virtual ~TcpServer();
+    void close();
     void listen( const QHostAddress&, quint16 );
     TcpSocket* nextPendingConnection();
 

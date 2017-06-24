@@ -42,14 +42,12 @@ class DECL_EXPORT __NAMESPACE__::TcpSocket
 {
     Q_OBJECT
 public:
-    // Constructor
     explicit TcpSocket( QObject *parent = 0 );
-
     explicit TcpSocket( QTcpSocket* );
-
-    // Destructor
     virtual ~TcpSocket();
-
+    void disconnectFromHost();
+    QHostAddress peerAddress() const;
+    quint16 peerPort() const;
     void connectToHost( const QHostAddress&, quint16, QIODevice::OpenMode mode = QIODevice::ReadWrite );
 
     /*!
@@ -59,23 +57,24 @@ public:
     template <class T> void write( const T &message );
 
 signals:
-__REPEAT_START__
-    void receive( const __NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__> ) const;
-__REPEAT_END__
-
     void malformed() const;
     void connected() const;
     void disconnected() const;
     void error(QAbstractSocket::SocketError) const;
+__REPEAT_START__
+    void receive( const __NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__> ) const;
+__REPEAT_END__
 
 private slots:
     void receiveTcp();
 
 private:
+    // Pure virtual implementation
 __REPEAT_START__
     void signal_receive( const __NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__> ) const;
 __REPEAT_END__
 
+    // Pure virtual implementation
     void signal_malformed() const;
 
     QTcpSocket* m_socket;

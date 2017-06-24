@@ -25,8 +25,20 @@
 #include <QCoreApplication>
 #include "client.h"
 
+#include <signal.h>
+
+void shutdown( int )
+{
+    QCoreApplication::quit();
+}
+
 int main( int argc, char *argv[] )
 {
+    signal( SIGQUIT, shutdown );
+    signal( SIGTERM, shutdown );
+    signal( SIGINT, shutdown );
+    signal( SIGHUP, shutdown );
+
     QCoreApplication a( argc, argv );
     Client client;
     return a.exec();

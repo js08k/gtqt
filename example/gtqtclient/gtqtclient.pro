@@ -27,12 +27,14 @@ QT -= gui
 QT += network
 
 INCLUDEPATH += \
+    /usr/local/protobuf/include \
     $${OUT_PWD}/../libs
 
 DEPENDPATH += \
     $$OUT_PWD/../libs
 
 LIBS += \
+    -L/usr/local/protobuf/lib \
     -lprotobuf \
     -L$${OUT_PWD}/../libs -lgtqt
 

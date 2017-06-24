@@ -43,7 +43,6 @@ private:
 
 public:
     explicit Socket();
-
     virtual ~Socket();
 
 protected:

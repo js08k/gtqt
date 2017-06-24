@@ -37,8 +37,11 @@
 #include <iostream>
 
 // Google's Protocol Compiler Includes
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include <google/protobuf/compiler/importer.h>
 #include <google/protobuf/descriptor.h>
+#pragma GCC diagnostic pop
 
 /*!
  * \brief Autogen::Autogen
@@ -595,7 +598,7 @@ void Autogen::genRepeatCode( QByteArray &inputData )
         }
 
         // Replace the repeat block (including the keywords)
-        inputData.replace( _template, codeBlock.toUtf8() );
+        inputData.replace( start, end-start, codeBlock.toUtf8() );
     }
     while( (start > -1) && (end > -1) );
 }

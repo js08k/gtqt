@@ -34,26 +34,30 @@ isEmpty(PROTOS) {
 isEmpty(IDL_DIR) {
     error( IDL_DIR variable must be defined before including gtqtbuild.pri )
 }
-win32:IDL_DIR=$$replace(IDL_DIR,/,\\)
 
 isEmpty(GTQT_DIR) {
     error( GTQT_DIR variable must be defined before including gtqtbuild.pri )
-}
-win32:CONFIG(debug,debug|release) {
-    GTQT_DIR=$$replace(GTQT_DIR,/,\\)\\debug
-} else {
-    GTQT_DIR=$$replace(GTQT_DIR,/,\\)\\release
 }
 
 isEmpty(GTQT_SRC) {
     error( GTQT_SRC variable must be defined before including gtqtbuild.pri )
 }
-win32:GTQT_SRC=$$replace(GTQT_SRC,/,\\)
 
 isEmpty(GTQT_DESTDIR) {
     error( GTQT_DESTDIR variable must be defined before including the gtqtbuild.pri)
 }
-win32:GTQT_DESTDIR=$$replace(GTQT_DESTDIR,/,\\)
+
+win32 {
+    CONFIG(debug,debug|release) {
+    GTQT_DIR=$$replace(GTQT_DIR,/,\\)\\debug
+    } else {
+    GTQT_DIR=$$replace(GTQT_DIR,/,\\)\\release
+    }
+
+    IDL_DIR=$$replace(IDL_DIR,/,\\)
+    GTQT_SRC=$$replace(GTQT_SRC,/,\\)
+    GTQT_DESTDIR=$$replace(GTQT_DESTDIR,/,\\)
+}
 
 for(p, PROTOS):IDLS += $${_PRO_FILE_PWD_}/$${p}
 for(p, PROTOS):IDLS_OUT += $${GTQT_DESTDIR}/$${p}

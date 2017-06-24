@@ -63,4 +63,9 @@ protobuf_impl.CONFIG = no_link
 
 QMAKE_EXTRA_COMPILERS += protobuf_impl
 
-LIBS += -lprotobuf
+INCLUDEPATH += \
+    /usr/local/protobuf/include
+
+LIBS += \
+    -L/usr/local/protobuf/lib \
+    -lprotobuf

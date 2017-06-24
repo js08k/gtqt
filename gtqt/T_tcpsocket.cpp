@@ -25,6 +25,9 @@
 // GtQt Includes
 #include "tcpsocket.h"
 
+// Qt Includes
+#include <QHostAddress>
+
 /*!
  * \brief TcpSocket::TcpSocket Constructor which connects the signal from
  * the Socket parent class. The signal is strictly a passthrough signal.
@@ -58,12 +61,41 @@ __NAMESPACE__::TcpSocket::TcpSocket( QTcpSocket* socket )
 }
 
 /*!
- * \brief TcpSocket::~TcpSocket
+ * \brief TcpSocket::~TcpSocket Deletes the QTcpSocket
  */
 __NAMESPACE__::TcpSocket::~TcpSocket()
 {
     m_socket->deleteLater();
     m_socket = 0;
+}
+
+/*!
+ * \brief TcpSocket::disconnectFromHost Wrapper call
+ * to QAbstractSocket::disconnectFromHost
+ */
+void __NAMESPACE__::TcpSocket::disconnectFromHost()
+{
+    m_socket->disconnectFromHost();
+}
+
+/*!
+ * \brief TcpSocket::peerAddress Wrapper call to
+ * QAbstractSocket::peerAddress()
+ * \return See documentation for QAbstractSocket::peerAddress()
+ */
+QHostAddress __NAMESPACE__::TcpSocket::peerAddress() const
+{
+    return m_socket->peerAddress();
+}
+
+/*!
+ * \brief TcpSocket::peerPort Wrapper call to
+ * QAbstractSocket::peerPort()
+ * \return See documentation for QAbstractSocket::peerPort()
+ */
+quint16 __NAMESPACE__::TcpSocket::peerPort() const
+{
+    return m_socket->peerPort();
 }
 
 void __NAMESPACE__::TcpSocket::connectToHost( const QHostAddress& addr, quint16 port, QIODevice::OpenMode mode )

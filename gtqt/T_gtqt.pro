@@ -49,6 +49,7 @@ SOURCES += \
     tcpsocket.cpp \
     tcpserver.cpp \
     file.cpp \
+    peerlink.cpp \
 #    sslsocket.cpp
 
 HEADERS += \
@@ -60,5 +61,6 @@ HEADERS += \
     udpsocket.h \
     tcpserver.h \
     file.h \
+    peerlink.h \
 #    sslsocket.h
 

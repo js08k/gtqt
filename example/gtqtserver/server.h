@@ -28,12 +28,10 @@
 #include <QObject>
 #include <datapackage.h>
 
-namespace gtqt
-{
-    class UdpSocket;
-    class TcpServer;
-    class TcpSocket;
-}
+namespace gtqt { class UdpSocket; }
+namespace gtqt { class TcpServer; }
+namespace gtqt { class TcpSocket; }
+namespace gtqt { class PeerLink; }
 
 class Server : public QObject
 {
@@ -52,10 +50,12 @@ private slots:
     void newConnection();
 
 private:
-    bool m_testTcp;
+    bool const m_testTcp;
+    bool const m_testUdp;
     gtqt::UdpSocket* m_udpServer;
     gtqt::TcpServer* m_tcpServer;
     gtqt::TcpSocket* m_tcpSocket;
+    gtqt::PeerLink* m_link;
 };
 
 #endif // SERVER_H

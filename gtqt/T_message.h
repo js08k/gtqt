@@ -28,7 +28,10 @@
 #include "export.h"
 
 // Includes that the autogenerator will need to add
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 __PROTO_INCLUDES__
+#pragma GCC diagnostic pop
 
 namespace __NAMESPACE__ { template <typename T> class DECL_EXPORT Traits; }
 __REPEAT_START__

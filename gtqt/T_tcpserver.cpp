@@ -44,6 +44,11 @@ __NAMESPACE__::TcpServer::~TcpServer()
 
 }
 
+void __NAMESPACE__::TcpServer::close()
+{
+    m_tcpServer->close();
+}
+
 void __NAMESPACE__::TcpServer::listen( const QHostAddress& addr, quint16 port )
 {
     m_tcpServer->listen( addr, port );

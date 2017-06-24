@@ -28,11 +28,9 @@
 #include <QObject>
 #include <datapackage.h>
 
-namespace gtqt
-{
-    class UdpSocket;
-    class TcpSocket;
-}
+namespace gtqt { class UdpSocket; }
+namespace gtqt { class TcpSocket; }
+namespace gtqt { class PeerLink; }
 
 class Client : public QObject
 {
@@ -52,9 +50,11 @@ private slots:
     void receive( const gtqt::DataPackage<gtqt::ServerType2>& );
 
 private:
-    bool m_testTcp;
+    bool const m_testTcp;
+    bool const m_testUdp;
     gtqt::UdpSocket* m_udpClient;
     gtqt::TcpSocket* m_tcpClient;
+    gtqt::PeerLink* m_link;
 };
 
 #endif // CLIENT_H

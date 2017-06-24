@@ -7,12 +7,16 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
+INCLUDEPATH += \
+    /usr/local/protobuf/include
+
 LIBS += \
+    -L/usr/local/protobuf/lib \
     -lprotobuf
 
 SOURCES += \
     main.cpp \
-    autogen.cpp \
+    autogen.cpp
 
 HEADERS += \
     autogen.h
@@ -37,7 +41,9 @@ OTHER_FILES += \
     T_tcpserver.cpp \
     T_tcpserver.h \
     T_file.cpp \
-    T_file.h
+    T_file.h \
+    T_peerlink.cpp \
+    T_peerlink.h
 
 
 
