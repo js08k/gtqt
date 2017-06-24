@@ -1,3 +1,6 @@
+# To compile and use this code successfully version 2.6.0 over protoc must be
+# used
+
 # Brief
 Genreates Tcp/Udp/SSL classes based around Qt network classes that
 transmit/receive messages (defined by the protoc IDL) as Qt signals and slots.
