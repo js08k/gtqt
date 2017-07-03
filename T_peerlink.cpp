@@ -30,6 +30,7 @@
 
 __NAMESPACE__::PeerLink::PeerLink( QObject* parent )
     : QObject(parent)
+    , m_defaultAllowMulti(false)
     , m_server(NULL)
 {
     // Generate a new __NAMESPACE__::TcpServer with this as the parent
@@ -131,6 +132,11 @@ __REPEAT_END__
     socket->connectToHost(dest, port);
 }
 
+void __NAMESPACE__::PeerLink::setDefaultAllowMulti( bool defaultAllowMulti )
+{
+    m_defaultAllowMulti = defaultAllowMulti;
+}
+
 void __NAMESPACE__::PeerLink::connected()
 {
     if ( dynamic_cast<__NAMESPACE__::TcpSocket*>(sender()) )
@@ -178,6 +184,9 @@ void __NAMESPACE__::PeerLink::disconnected()
 void __NAMESPACE__::PeerLink::newConnection()
 {
     __NAMESPACE__::TcpSocket* socket( m_server->nextPendingConnection() );
+
+    if ( !m_defaultAllowMulti )
+    { m_server->close(); }
 
     QString const key(socket->peerAddress().toString()+":"+
                       QString::number(socket->peerPort()));

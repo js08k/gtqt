@@ -49,6 +49,7 @@ public:
     void close( QHostAddress const&, quint16 );
     void listen( QHostAddress const&, quint16 );
     void connectToHost( QHostAddress const&, quint16 );
+    void setDefaultAllowMulti( bool );
 
 signals:
     void connected( QHostAddress const&, quint16 ) const;
@@ -68,6 +69,7 @@ private slots:
     void newConnection();
 
 private:
+    bool m_defaultAllowMulti;
     __NAMESPACE__::TcpServer* m_server;
     QMap<QString,__NAMESPACE__::TcpSocket*> m_peers;
 };
