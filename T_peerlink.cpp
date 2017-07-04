@@ -74,6 +74,9 @@ void __NAMESPACE__::PeerLink::close(
 
 void __NAMESPACE__::PeerLink::listen( QHostAddress const& addr, quint16 port )
 {
+    if ( m_server->isListening() )
+    { m_server->close(); }
+
     m_server->listen( addr, port );
 }
 
@@ -123,12 +126,14 @@ void __NAMESPACE__::PeerLink::connectToHost(
         m_peers[key] = socket;
 
         // Connect all message receivers from this socket
-        __REPEAT_START__
-                connect( socket, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
-                         this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
-        __REPEAT_END__
-                connect( socket, SIGNAL(connected()), this, SLOT(connected()) );
+__REPEAT_START__
+        connect( socket, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
+                 this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
+__REPEAT_END__
+        connect( socket, SIGNAL(connected()), this, SLOT(connected()) );
         connect( socket, SIGNAL(disconnected()), this, SLOT(disconnected()) );
+        connect( socket, SIGNAL(error(QAbstractSocket::SocketError)),
+                 this, SLOT(handle(QAbstractSocket::SocketError)) );
 
         // Connect the the server implementation peer
         socket->connectToHost(dest, port);
@@ -238,13 +243,43 @@ void __NAMESPACE__::PeerLink::newConnection()
 
         // Connect all message receivers from this socket
 __REPEAT_START__
-                connect( sock, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
-                         this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
+        connect( sock, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
+                 this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
 __REPEAT_END__
-                connect( sock, SIGNAL(disconnected()), this, SLOT(disconnected()) );
+        connect( sock, SIGNAL(disconnected()), this, SLOT(disconnected()) );
+        connect( sock, SIGNAL(error(QAbstractSocket::SocketError)),
+                 this, SLOT(handle(QAbstractSocket::SocketError)) );
 
         emit connected( sock->peerAddress(), sock->peerPort() );
     }
+}
+
+void __NAMESPACE__::PeerLink::handle(QAbstractSocket::SocketError e)
+{
+    // Some error occured, remove the link in error from our link list, and
+    // pass the error up
+    if ( dynamic_cast<__NAMESPACE__::TcpSocket*>(sender()) )
+    {
+        __NAMESPACE__::TcpSocket* socket(
+                    static_cast<__NAMESPACE__::TcpSocket*>(sender()) );
+
+        QString const key(socket->peerAddress().toString()+":"+
+                          QString::number(socket->peerPort()));
+
+        // Check for the existance in the peer map
+        QMap<QString,__NAMESPACE__::TcpSocket*>::iterator i(m_peers.find(key));
+        if ( i != m_peers.end() )
+        {
+            m_peers.erase(i);
+        }
+
+        socket->deleteLater();
+    }
+//  else if ( dynamic_cast<__NAMESPACE__::UdpSocket*>(sender()) )
+//  {
+//  }
+
+    emit error(e);
 }
 
 __REPEAT_START__

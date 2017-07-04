@@ -54,6 +54,7 @@ public:
 signals:
     void connected( QHostAddress const&, quint16 ) const;
     void disconnected( QHostAddress const&, quint16 ) const;
+    void error(QAbstractSocket::SocketError) const;
 __REPEAT_START__
     void receive( __NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__> const& ) const;
 __REPEAT_END__
@@ -67,6 +68,7 @@ private slots:
     void connected();
     void disconnected();
     void newConnection();
+    void handle(QAbstractSocket::SocketError);
 
 private:
     bool m_allowMulti;
