@@ -30,7 +30,7 @@
 
 __NAMESPACE__::PeerLink::PeerLink( QObject* parent )
     : QObject(parent)
-    , m_defaultAllowMulti(false)
+    , m_allowMulti(false)
     , m_server(NULL)
 {
     // Generate a new __NAMESPACE__::TcpServer with this as the parent
@@ -114,27 +114,38 @@ void __NAMESPACE__::PeerLink::connectToHost(
         m_peers.erase(i);
     }
 
-    // Create a new socket to make a connection with
-    __NAMESPACE__::TcpSocket* socket = new __NAMESPACE__::TcpSocket(this);
+    if ( m_allowMulti || m_peers.empty() )
+    {
+        // Create a new socket to make a connection with
+        __NAMESPACE__::TcpSocket* socket = new __NAMESPACE__::TcpSocket(this);
 
-    // Save the new socket in the table
-    m_peers[key] = socket;
+        // Save the new socket in the table
+        m_peers[key] = socket;
 
-    // Connect all message receivers from this socket
-__REPEAT_START__
-    connect( socket, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
-             this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
-__REPEAT_END__
-    connect( socket, SIGNAL(connected()), this, SLOT(connected()) );
-    connect( socket, SIGNAL(disconnected()), this, SLOT(disconnected()) );
+        // Connect all message receivers from this socket
+        __REPEAT_START__
+                connect( socket, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
+                         this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
+        __REPEAT_END__
+                connect( socket, SIGNAL(connected()), this, SLOT(connected()) );
+        connect( socket, SIGNAL(disconnected()), this, SLOT(disconnected()) );
 
-    // Connect the the server implementation peer
-    socket->connectToHost(dest, port);
+        // Connect the the server implementation peer
+        socket->connectToHost(dest, port);
+    }
 }
 
-void __NAMESPACE__::PeerLink::setDefaultAllowMulti( bool defaultAllowMulti )
+/*!
+ * \brief __NAMESPACE__::PeerLink::setAllowMulti Sets the allowMulti
+ * flag. This flag controls whether the peer link will allow multiple
+ * connections or not. This effects the server side by only accepting the first
+ * connection, this effects the client side by only allowing connectToHost if no
+ * connections are present
+ * \param allowMulti
+ */
+void __NAMESPACE__::PeerLink::setAllowMulti( bool allowMulti )
 {
-    m_defaultAllowMulti = defaultAllowMulti;
+    m_allowMulti = allowMulti;
 }
 
 void __NAMESPACE__::PeerLink::connected()
@@ -183,13 +194,10 @@ void __NAMESPACE__::PeerLink::disconnected()
 
 void __NAMESPACE__::PeerLink::newConnection()
 {
-    __NAMESPACE__::TcpSocket* socket( m_server->nextPendingConnection() );
+    __NAMESPACE__::TcpSocket* sock( m_server->nextPendingConnection() );
 
-    if ( !m_defaultAllowMulti )
-    { m_server->close(); }
-
-    QString const key(socket->peerAddress().toString()+":"+
-                      QString::number(socket->peerPort()));
+    QString const key(sock->peerAddress().toString()+":"+
+                      QString::number(sock->peerPort()));
 
     // Check for an already active/known connection to the target host
     QMap<QString,__NAMESPACE__::TcpSocket*>::iterator i(m_peers.find(key));
@@ -199,6 +207,9 @@ void __NAMESPACE__::PeerLink::newConnection()
         // this connection before proceeding.
         __NAMESPACE__::TcpSocket* socket(*i);
 
+        // Erase from the peer table
+        m_peers.erase(i);
+
         // Disconnect all listening slots
         socket->disconnect();
 
@@ -206,28 +217,34 @@ void __NAMESPACE__::PeerLink::newConnection()
         socket->disconnectFromHost();
 
         // Inform the socket to delete itself when the disconnect completes
-        connect( socket, SIGNAL(disconnected()),
-                 socket, SLOT(deleteLater()) );
-
-        // For full cleanup, delete in 30 seconds if disconnected
-        // is never called
-        QTimer::singleShot( 30000, socket, SLOT(deleteLater()) );
-
-        // Erase from the peer table
-        m_peers.erase(i);
+        socket->deleteLater();
     }
 
-    // Save the new socket in the table
-    m_peers[key] = socket;
+    // Do not allow multiple connections, drop the new connection if our peer
+    // list is non empty
+    if ( !m_allowMulti && !m_peers.empty() )
+    {
+        // Disconnect the new socket
+        sock->disconnectFromHost();
 
-    // Connect all message receivers from this socket
+        // Free the socket's resources
+        sock->deleteLater();
+    }
+    else
+    {
+
+        // Save the new socket in the table
+        m_peers[key] = sock;
+
+        // Connect all message receivers from this socket
 __REPEAT_START__
-    connect( socket, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
-             this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
+                connect( sock, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)),
+                         this, SIGNAL(receive(__NAMESPACE__::DataPackage<__NAMESPACE__::__KEY__>)));
 __REPEAT_END__
-    connect( socket, SIGNAL(disconnected()), this, SLOT(disconnected()) );
+                connect( sock, SIGNAL(disconnected()), this, SLOT(disconnected()) );
 
-    emit connected( socket->peerAddress(), socket->peerPort() );
+        emit connected( sock->peerAddress(), sock->peerPort() );
+    }
 }
 
 __REPEAT_START__
