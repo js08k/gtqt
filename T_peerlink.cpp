@@ -68,8 +68,25 @@ void __NAMESPACE__::PeerLink::close()
 void __NAMESPACE__::PeerLink::close(
         QHostAddress const& peeraddr, quint16 peerport )
 {
-    Q_UNUSED(peeraddr)
-    Q_UNUSED(peerport)
+    QString const key(peeraddr.toString()+":"+QString::number(peerport));
+
+    // Check for an already active/known connection to the target host
+    QMap<QString,__NAMESPACE__::TcpSocket*>::iterator i(m_peers.find(key));
+
+    if ( i != m_peers.end() )
+    {
+        // Found the socket, hold a local to the pointer of the socket
+        __NAMESPACE__::TcpSocket* socket(*i);
+
+        // Erase from the peer table
+        m_peers.erase(i);
+
+        // Start the disconnect process on the socket
+        socket->disconnectFromHost();
+
+        // Inform the socket to delete itself when the disconnect completes
+        socket->deleteLater();
+    }
 }
 
 void __NAMESPACE__::PeerLink::listen( QHostAddress const& addr, quint16 port )
