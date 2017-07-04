@@ -45,6 +45,7 @@ public:
     void close();
     void listen( const QHostAddress&, quint16 );
     TcpSocket* nextPendingConnection();
+    bool isListening() const;
 
 signals:
     void newConnection();

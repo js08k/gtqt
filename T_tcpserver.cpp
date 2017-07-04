@@ -78,3 +78,8 @@ __NAMESPACE__::TcpSocket* __NAMESPACE__::TcpServer::nextPendingConnection()
     }
 }
 
+bool __NAMESPACE__::TcpServer::isListening() const
+{
+    return m_tcpServer->isListening();
+}
+
