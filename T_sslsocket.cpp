@@ -54,7 +54,7 @@ void __NAMESPACE__::SslSocket::receiveSsl()
     while( bytesAvailable() >= 8 )
     {
         // Create a hear to inspect the incoming packet
-        int32_t header[2];
+        uint32_t header[2];
 
         // Peek the header information from the packet
         peek( (char *)header, 8 );

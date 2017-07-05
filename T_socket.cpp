@@ -68,14 +68,14 @@ void __NAMESPACE__::Socket::parse( const QByteArray &array )
 
     // Create a pointer to the header. Message size will be the first entry and
     // message type will be the second entry.
-    const int32_t* header = (const int32_t *)array.data();
+    const uint32_t* header = (const uint32_t *)array.data();
 
     // Parse the header data creating two constants
-    const int32_t messageSize = header[0];
-    const int32_t messageType = header[1];
+    const uint32_t messageSize = header[0];
+    const uint32_t messageType = header[1];
 
     // Input validation, to stop the server from any segmentation faults
-    if( ( messageSize > 0 ) && ( messageSize + 8 <= array.size() ) )
+    if( ( messageSize > 0 ) && ( messageSize + 8 <= uint32_t(array.size()) ) )
     {
         // Create a QByteArray from the data following the header
         QByteArray buffer( array.data() + 8, messageSize );
@@ -143,7 +143,9 @@ bool __NAMESPACE__::Socket::serialize( const __NAMESPACE__::__KEY__& message, QB
         array.clear();
 
         // Create the header: message size as first entry, type as second
-        int32_t header[2] = { int32_t( serialized.length() ), Socket::__VALUE__ };
+        uint32_t header[2];
+        header[0] = serialized.length();
+        header[1] = uint32_t(Socket::__VALUE__);
 
         // Write the 8 byte header for the message
         array.append( (const char *)header, 8 );

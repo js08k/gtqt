@@ -112,7 +112,7 @@ void __NAMESPACE__::TcpSocket::receiveTcp()
     while( m_socket->bytesAvailable() >= 8 )
     {
         // Create a hear to inspect the incoming packet
-        int32_t header[2];
+        uint32_t header[2];
 
         // Peek the header information from the packet
         m_socket->peek( (char *)header, 8 );
